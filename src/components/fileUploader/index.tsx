@@ -3,15 +3,13 @@
 import {  useState } from 'react'
 import { AlertCircle, CheckCircle, Upload, File } from 'lucide-react'
 import Image from 'next/image'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+// import { useRecoilState, useSetRecoilState } from 'recoil'
 
 
-import { postfileObject } from '@/src/services/fileUpload/postObject'
-import { IPostObjectResponse } from '@/src/services/fileUpload/postObject/type'
-import { useMutation } from '@tanstack/react-query'
-import { IFileUploadFields } from '@/src/services/fileUpload/fileUpload/type'
-import { fileUpload } from '@/src/services/fileUpload/fileUpload'
-import { fileContentType, fileKey } from '@/src/recoil/atoms/fileAtom'
+
+// import { useMutation } from '@tanstack/react-query'
+
+// import { fileContentType, fileKey } from '@/src/recoil/atoms/fileAtom'
 
 
 interface FileUploaderProps {
@@ -26,7 +24,7 @@ export const FileUploader = ({
   disabled = false,
   acceptedFileTypes,
   showPreview = true,
-  onUploadSuccess,
+  // onUploadSuccess,
   maxSizeInBytes = 5 * 1024 * 1024, // 5MB default
 }: FileUploaderProps) => {
   const [file, setFile] = useState<File | null>(null)
@@ -36,39 +34,40 @@ export const FileUploader = ({
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [isUploaded, setIsUploaded] = useState<boolean>(false) // New state
   const [updatedFileName, setUpdatedFileName] = useState<string>("")
-  const [fileNameKey, setFileNameKey] = useRecoilState(fileKey)
-  const setContentType = useSetRecoilState(fileContentType)
-const [FileuploadURL,setFileUploadURL] = useState<string>("")
-  const [fileData, setFileData] = useState<IFileUploadFields | null>(null)
+  // const [fileNameKey, setFileNameKey] = useRecoilState(fileKey)
+  // const setContentType = useSetRecoilState(fileContentType)
+// const [FileuploadURL,setFileUploadURL] = useState<string>("")
+//   const [fileData, setFileData] = useState<IFileUploadFields | null>(null)
 
 
+// use this function to post file object to the server
 
-  const  postFileObjectMutation = useMutation({
-    mutationFn: postfileObject,
-    onSuccess: (data:IPostObjectResponse) => {
-      console.log("postObject Response Data ",data)
+//   const  postFileObjectMutation = useMutation({
+//     mutationFn: postfileObject,
+//     onSuccess: (data:IPostObjectResponse) => {
+//       console.log("postObject Response Data ",data)
 
 
       
-      setFileNameKey(data.data.fields.Key) // Set file key to be used in file upload mutation
-// Set file upload URL to be used in file upload mutation
+//       setFileNameKey(data.data.fields.Key) // Set file key to be used in file upload mutation
+// // Set file upload URL to be used in file upload mutation
 
-      setFileUploadURL(data.data.url)
-      // Set file data to be used in file upload mutation
-      setFileData({ 
-        Key: data.data.fields.Key,
-        bucket: data.data.fields.bucket,
-        "X-Amz-Algorithm": data.data.fields["X-Amz-Algorithm"],
-        "X-Amz-Credential": data.data.fields["X-Amz-Credential"],
-        "X-Amz-Date": data.data.fields["X-Amz-Date"],
-        Policy: data.data.fields.Policy,
-        "X-Amz-Signature": data.data.fields["X-Amz-Signature"],
-        file: file as File // The actual file selected by the user
-      })
+//       setFileUploadURL(data.data.url)
+//       // Set file data to be used in file upload mutation
+//       setFileData({ 
+//         Key: data.data.fields.Key,
+//         bucket: data.data.fields.bucket,
+//         "X-Amz-Algorithm": data.data.fields["X-Amz-Algorithm"],
+//         "X-Amz-Credential": data.data.fields["X-Amz-Credential"],
+//         "X-Amz-Date": data.data.fields["X-Amz-Date"],
+//         Policy: data.data.fields.Policy,
+//         "X-Amz-Signature": data.data.fields["X-Amz-Signature"],
+//         file: file as File // The actual file selected by the user
+//       })
 
 
-    },
-  })
+//     },
+//   })
 
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +81,7 @@ const [FileuploadURL,setFileUploadURL] = useState<string>("")
 
       setFile(selectedFile)
 
-   setContentType(selectedFile.type) // Set content type to be used in file upload mutation
+  //  setContentType(selectedFile.type) // Set content type to be used in file upload mutation
 console.log("selected file type ",selectedFile.type)
 console.log("selected file name ",selectedFile.name)
 
@@ -94,7 +93,7 @@ setUpdatedFileName(uniqueFileName)
 console.log("unique file name ",uniqueFileName)
 console.log("updated file name ",updatedFileName)
 
-      postFileObjectMutation.mutate({key:`test/images/${uniqueFileName}`,contentType:selectedFile.type}) // Call the post file object mutation with the file key and content type
+      // postFileObjectMutation.mutate({key:`test/images/${uniqueFileName}`,contentType:selectedFile.type}) // Call the post file object mutation with the file key and content type
       setIsUploaded(false) // Reset upload status when a new file is selected
       setUploadError(null)
 
@@ -110,23 +109,23 @@ console.log("updated file name ",updatedFileName)
   }
 
   // File upload mutation
-  const fileUploadMutation = useMutation({
-    mutationFn: (data: IFileUploadFields) => fileUpload(data, FileuploadURL),
-    onSuccess: () => {
-      removeFile()
-      // Call the onUploadSuccess callback with the file key
-      setIsUploading(false)
-      onUploadSuccess(fileNameKey)
-      setUploadProgress(100)
-      setIsUploaded(true)
-      console.log("File uploaded successfully")
-    },
-    onError: (error) => { 
-      setUploadError('Failed to upload file. Please try again.')
-      console.error("File Upload error",error)
-      setUploadProgress(0)
-      setIsUploaded(false)
-  }})
+  // const fileUploadMutation = useMutation({
+  //   // mutationFn: (data: IFileUploadFields) => fileUpload(data, FileuploadURL),
+  //   onSuccess: () => {
+  //     removeFile()
+  //     // Call the onUploadSuccess callback with the file key
+  //     setIsUploading(false)
+  //     // onUploadSuccess(fileNameKey)
+  //     setUploadProgress(100)
+  //     setIsUploaded(true)
+  //     console.log("File uploaded successfully")
+  //   },
+  //   onError: (error) => { 
+  //     setUploadError('Failed to upload file. Please try again.')
+  //     console.error("File Upload error",error)
+  //     setUploadProgress(0)
+  //     setIsUploaded(false)
+  // }})
 
 
   const uploadFile = async () => {
@@ -138,7 +137,7 @@ console.log("updated file name ",updatedFileName)
     // const formData = new FormData()
     // formData.append('file', file)
 
-      fileUploadMutation.mutateAsync(fileData as IFileUploadFields)  // Call the file upload mutation with the file data
+      // fileUploadMutation.mutateAsync(fileData as IFileUploadFields)  // Call the file upload mutation with the file data
  
   }
 

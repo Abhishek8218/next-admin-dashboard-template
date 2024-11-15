@@ -5,7 +5,7 @@ import React, { useState, useMemo } from "react";
 
 // Interface for table props
 interface TableProps {
-  data?: Array<Record<string, any>>; // Data is optional
+  data?: Array<Record<string, string | number | boolean>>; // Data is optional
   onRowClick?: (id: string) => void;
   action?: boolean,
   onCreate?:()=>void,
@@ -227,7 +227,7 @@ export const Table: React.FC<TableProps> = ({ data = [], onRowClick, action, onC
     );
   };
 
-  const handleRowClick = (row: Record<string, any>) => {
+  const handleRowClick = (row: Record<string, string | number | boolean>) => {
     const firstKey = Object.keys(row)[0]; // Get the first key from the row object
     const firstKeyValue = row[firstKey] as string; // Ensure the value is treated as a string
 
@@ -236,7 +236,7 @@ export const Table: React.FC<TableProps> = ({ data = [], onRowClick, action, onC
     }
   };
 
-const handleEditClick = (row: Record<string, any>) => {
+const handleEditClick = (row: Record<string, string | number | boolean>) => {
 
  const firstKey = Object.keys(row)[0]; // Get the first key from the row object
     const firstKeyValue = row[firstKey] as string; // Ensure the value is treated as a string
@@ -343,11 +343,11 @@ const handleEditClick = (row: Record<string, any>) => {
                 {headers.map((header) => (
                   <td
                     key={header}
-                    title={row[header]}
+                    title={String(row[header])}
                     className="text-ellipsis overflow-hidden px-6 py-2.5 text-sm text-gray-500 truncate border-b border-gray-300"
                   >
                     {header === "status" ? (
-                      <StatusBadge status={row[header]} />
+                      <StatusBadge status={Number(row[header])} />
                     ) : (
                       <span>{row[header]}</span>
                     )}
