@@ -1,5 +1,6 @@
 "use client";
 import { ChartNoAxesColumn, Plus, Search, SlidersHorizontal } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import React, { useState, useMemo } from "react";
 
@@ -11,18 +12,26 @@ interface TableProps {
   onCreate?:()=>void,
   setDelete?: boolean,
   setEdit?: boolean
+  onEdit?:()=>void
+  onDelete?:(id:string)=>void
+  setDrawer?:boolean,
+  drawer?:(id:string)=>void,
+  drawerTitle?:string
 }
 type StatusMap = {
-  [key: number]: {
+  [key: number | string]: {
     text: string;
     class: string;
   };
 };
 
 // Status Badge Component
-const StatusBadge: React.FC<{ status: number }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: number | string }> = ({ status }) => {
   const statusMap: StatusMap = {
     // General Application Statuses
+    "active": { text: "Active", class: "bg-green-100 text-green-700" },
+    "inactive": { text: "Inactive", class: "bg-gray-100 text-gray-700" },
+    "draft": { text: "Draft", class: "bg-gray-100 text-gray-700" },
     "0": { text: "Application Submitted", class: "bg-gray-100 text-gray-700" },
     "1": { text: "Under Review", class: "bg-blue-100 text-blue-700" },
     "2": { text: "Approved", class: "bg-green-100 text-green-700" },
@@ -171,7 +180,7 @@ const StatusBadge: React.FC<{ status: number }> = ({ status }) => {
   );
 };
 
-export const Table: React.FC<TableProps> = ({ data = [], onRowClick, action, onCreate,setDelete,setEdit=true }) => {
+export const Table: React.FC<TableProps> = ({ data = [], onRowClick, action, onCreate,setDelete,setEdit=true,onDelete,drawer,drawerTitle,setDrawer }) => {
   const router = useRouter();
   // const [editId, setEditId] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{
@@ -246,7 +255,7 @@ const handleEditClick = (row: Record<string, string | number | boolean>) => {
   const currentPath = window.location.pathname;
   console.log("row", row);
   // Replace the last part of the URL with "/create/edit"
-  const newUrl =   currentPath +  "/entry/edit/"  + firstKeyValue
+  const newUrl =   currentPath +  "/edit/"  + firstKeyValue
   
   // Use router.replace to update the URL without reloading the page
   router.replace(newUrl);
@@ -346,14 +355,43 @@ const handleEditClick = (row: Record<string, string | number | boolean>) => {
                     title={String(row[header])}
                     className="text-ellipsis overflow-hidden px-6 py-2.5 text-sm text-gray-500 truncate border-b border-gray-300"
                   >
-                    {header === "status" ? (
-                      <StatusBadge status={Number(row[header])} />
-                    ) : (
-                      <span>{row[header]}</span>
-                    )}
+                   {header === "status" ? (
+  typeof row[header] === 'string' || typeof row[header] === 'number' ? (
+    <StatusBadge status={row[header]} />
+  ) : (
+    <span>{row[header]}</span>
+  )
+) : header === "image" ? (
+  <img
+    src={typeof row[header] === 'string' ? row[header] : ''}
+    alt="Profile Picture"
+    width={40} // You can adjust the size
+    height={40}
+    className="rounded-full" // For a rounded profile picture
+  />
+) : (
+  <span>{row[header]}</span>
+)}
+
+
+                   
                   </td>
                 ))}
-                {action && <td className="px-6 py-2.5 text-sm text-gray-500 whitespace-nowrap sticky right-0 bg-white border-b border-gray-300">
+                {action && <td className="px-6 py-2.5 space-x-2 text-sm text-gray-500 whitespace-nowrap sticky right-0 bg-white border-b border-gray-300">
+                  { setDrawer && <button
+                    className=" text-green-500 hover:text-green-700 transition-colors duration-200"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent row click event
+                      console.log("Drawer clicked for row:", row);
+                      if (drawer) {
+                        console.log("row.id", row._id);
+                        drawer(row._id as string);  
+                      }
+                    }}
+                  >
+                    {drawerTitle}
+                  </button>}
+
 {   setEdit &&               <button
                     className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
                     onClick={(e) => {
@@ -368,16 +406,25 @@ const handleEditClick = (row: Record<string, string | number | boolean>) => {
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent row click event
                       console.log("Delete clicked for row:", row);
+                      if (onDelete) {
+                        onDelete(row._id as string);
+                        console.log("row.id", row._id);
+                      }
                     }}
                   >
                     Delete
                   </button>}
-                </td>}
+
+               
+                </td>
+}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      
+  
     </div>
   );
 };

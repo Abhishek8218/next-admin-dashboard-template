@@ -244,14 +244,14 @@ export const Sidebar = () => {
         {isMobileMenuOpen ? (
           <X size={28} className="text-white absolute left-[12rem]  top-4 font-extrabold" />
         ) : (
-          <Menu size={28} className="text-black  font-bold" />
+          <Menu size={28} className="text-black  font-bold mt-[1.1rem]" />
         )}
       </button>
 
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`select-none  h-full bg-[#0c1526] w-[250px] flex flex-col shadow-lg fixed left-0 top-0 z-40 transition-transform duration-300 ease-in-out ${
+        className={`select-none rounded-xl  h-full  bg-[#0c1526] w-[250px] flex flex-col shadow-lg fixed  md:relative left-0 top-0 z-40 transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
@@ -265,7 +265,7 @@ export const Sidebar = () => {
                 </p>
                 <div className="flex-1 h-fit">
                   <p className="text-gray-300 text-[16px] font-normal">
-                    Sikar Branch
+                    VODMS
                   </p>
                   <p className="text-gray-200 font-normal text-[12px]">
                     Sourav

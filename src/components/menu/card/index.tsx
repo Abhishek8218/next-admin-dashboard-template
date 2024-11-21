@@ -1,7 +1,7 @@
 "use client"
 import { useRouter } from "next/navigation"
 
-interface JLGCardProps {
+interface MenuCardProps {
     firstIcon?: React.ReactNode,
     lastIcon?: React.ReactNode,
     title?: string,
@@ -17,7 +17,7 @@ interface JLGCardProps {
     }
 }
 
-export const JLGCard: React.FC<JLGCardProps> = (props) => {
+export const MenuCard: React.FC<MenuCardProps> = (props) => {
     const router = useRouter()
 
     const handleCardClick = () => {
